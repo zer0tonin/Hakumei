@@ -1,17 +1,22 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type Page int64
+
+const (
+    Login Page = 1
+    Browser Page = 2
+)
+
 type model struct {
-    username    textinput.Model 
-    password    textinput.Model
-    focusIndex  int
+    page Page
+    loginModel loginModel
 }
 
 func initialModel() model {
@@ -28,67 +33,46 @@ func initialModel() model {
     passwordInput.Width = 20
 
     return model{
+	page: Login,
+	loginModel: loginModel{
 	    username: usernameInput,
 	    password: passwordInput,
 	    focusIndex: 0,
+	},
     }
 }
 
 func (m model) Init() tea.Cmd {
-    return textinput.Blink
-}
-
-func (m model) updateFocus() (tea.Model, tea.Cmd) {
-    var cmd tea.Cmd
-    switch m.focusIndex {
-    case 0:
-	cmd = m.username.Focus()
-	m.password.Blur()
-    case 1:
-	cmd = m.password.Focus()
-	m.username.Blur()
+    switch m.page {
+    case Login:
+	return m.loginModel.Init()
+    case Browser:
+	fallthrough
+    default:
+	return nil
     }
-    return m, cmd
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-    var cmd tea.Cmd
-
-    switch msg := msg.(type) {
-    case tea.KeyMsg:
-        switch msg.Type {
-        case tea.KeyCtrlC, tea.KeyEsc:
-            return m, tea.Quit
-	case tea.KeyTab, tea.KeyDown:
-	    m.focusIndex = (1 - m.focusIndex) % 2
-	    return m.updateFocus()
-	case tea.KeyShiftTab, tea.KeyUp:
-	    m.focusIndex = (m.focusIndex + 1) % 2
-	    return m.updateFocus()
-        }
-    case error:
-        return m, nil
+    switch m.page {
+    case Login:
+	return m.loginModel.Update(msg)
+    case Browser:
+	fallthrough
+    default:
+	return nil, nil
     }
-
-    switch m.focusIndex {
-    case 0:
-	m.username, cmd = m.username.Update(msg)
-	return m, cmd
-    case 1:
-	m.password, cmd = m.password.Update(msg)
-	return m, cmd
-    }
-
-    return m, cmd
 }
 
 func (m model) View() string {
-	return fmt.Sprintf(
-		"Login\n\n%s\n\n%s\n\n%s",
-		m.username.View(),
-		m.password.View(),
-		"(esc to quit)",
-	) + "\n"
+    switch m.page {
+    case Login:
+	return m.loginModel.View()
+    case Browser:
+	fallthrough
+    default:
+	return "" 
+    }
 }
 
 
