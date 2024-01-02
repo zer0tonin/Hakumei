@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/zer0tonin/Hakumei/login"
 
@@ -20,10 +21,10 @@ type model struct {
 	loginModel login.Model
 }
 
-func initialModel() model {
+func initialModel(url string) model {
 	return model{
 		page:       Login,
-		loginModel: login.NewLoginModel(),
+		loginModel: login.NewLoginModel(url),
 	}
 }
 
@@ -61,7 +62,11 @@ func (m model) View() string {
 }
 
 func main() {
-	p := tea.NewProgram(initialModel())
+	if len(os.Args) < 2 {
+		log.Fatal("URL required")
+	}
+
+	p := tea.NewProgram(initialModel(os.Args[1]))
 	if _, err := p.Run(); err != nil {
 		log.Fatal(err)
 	}

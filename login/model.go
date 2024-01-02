@@ -14,9 +14,10 @@ type Model struct {
 	password   textinput.Model
 	help       help.Model
 	focusIndex int
+	url        string
 }
 
-func NewLoginModel() Model {
+func NewLoginModel(url string) Model {
 	usernameInput := textinput.New()
 	usernameInput.Placeholder = "Username"
 	usernameInput.Focus()
@@ -34,6 +35,7 @@ func NewLoginModel() Model {
 		password:   passwordInput,
 		focusIndex: 0,
 		help:       help.New(),
+		url:        url,
 	}
 }
 
@@ -73,7 +75,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.focusIndex = (m.focusIndex + 1) % 2
 			return m.updateFocus()
 		case key.Matches(msg, loginKeys.Enter):
-			request := loginRequest{} // todo: give data
+			request := loginRequest{
+				target: m.url,
+				Username: m.username.Value(),
+				Password: m.password.Value(),
+			}
 			return m, request.do
 		}
 	case error:
