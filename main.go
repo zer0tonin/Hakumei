@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -20,25 +19,9 @@ type model struct {
 }
 
 func initialModel() model {
-    usernameInput:= textinput.New()
-    usernameInput.Placeholder = "Username"
-    usernameInput.Focus()
-    usernameInput.CharLimit = 156
-    usernameInput.Width = 20
-
-    passwordInput:= textinput.New()
-    passwordInput.Placeholder = "Password"
-    passwordInput.Blur()
-    passwordInput.CharLimit = 156
-    passwordInput.Width = 20
-
     return model{
 	page: Login,
-	loginModel: loginModel{
-	    username: usernameInput,
-	    password: passwordInput,
-	    focusIndex: 0,
-	},
+	loginModel: newLoginModel(),
     }
 }
 
