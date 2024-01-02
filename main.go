@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"runtime"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -46,8 +45,8 @@ func (m model) updateFocus() (tea.Model, tea.Cmd) {
 	cmd = m.username.Focus()
 	m.password.Blur()
     case 1:
-	m.username.Blur()
 	cmd = m.password.Focus()
+	m.username.Blur()
     }
     return m, cmd
 }
@@ -60,8 +59,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         switch msg.Type {
         case tea.KeyCtrlC, tea.KeyEsc:
             return m, tea.Quit
-	case tea.KeyTab, tea.KeyEnter, tea.KeyDown:
-	    m.focusIndex = (m.focusIndex - 1) % 2
+	case tea.KeyTab, tea.KeyDown:
+	    m.focusIndex = (1 - m.focusIndex) % 2
 	    return m.updateFocus()
 	case tea.KeyShiftTab, tea.KeyUp:
 	    m.focusIndex = (m.focusIndex + 1) % 2
@@ -71,7 +70,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         return m, nil
     }
 
-    runtime.Breakpoint()
     switch m.focusIndex {
     case 0:
 	m.username, cmd = m.username.Update(msg)
