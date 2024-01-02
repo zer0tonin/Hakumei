@@ -1,2 +1,2 @@
-# mikochi-tui
+# Hakumei
 A TUI client for Mikochi

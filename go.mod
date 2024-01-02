@@ -1,4 +1,4 @@
-module github.com/zer0tonin/mikochi-tui
+module github.com/zer0tonin/Hakumei
 
 go 1.21.4
 
