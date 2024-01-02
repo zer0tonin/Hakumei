@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/zer0tonin/Hakumei/login"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -15,13 +17,13 @@ const (
 
 type model struct {
 	page       Page
-	loginModel loginModel
+	loginModel login.Model
 }
 
 func initialModel() model {
 	return model{
 		page:       Login,
-		loginModel: newLoginModel(),
+		loginModel: login.NewLoginModel(),
 	}
 }
 

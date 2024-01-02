@@ -1,4 +1,4 @@
-package main
+package login
 
 import (
 	"fmt"
@@ -9,56 +9,14 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type loginKeyMap struct {
-	Up    key.Binding
-	Down  key.Binding
-	Enter key.Binding
-	Help  key.Binding
-	Quit  key.Binding
-}
-
-func (k loginKeyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Help, k.Quit}
-}
-
-func (k loginKeyMap) FullHelp() [][]key.Binding {
-	return [][]key.Binding{
-		{k.Up, k.Down, k.Enter},
-		{k.Help, k.Quit},
-	}
-}
-
-var loginKeys = loginKeyMap{
-	Up: key.NewBinding(
-		key.WithKeys(tea.KeyUp.String(), tea.KeyShiftTab.String()),
-		key.WithHelp("↑", "move up"),
-	),
-	Down: key.NewBinding(
-		key.WithKeys(tea.KeyDown.String(), tea.KeyTab.String()),
-		key.WithHelp("↓", "move down"),
-	),
-	Enter: key.NewBinding(
-		key.WithKeys(tea.KeyEnter.String()),
-		key.WithHelp("enter", "submit"),
-	),
-	Help: key.NewBinding(
-		key.WithKeys(tea.KeyCtrlH.String()),
-		key.WithHelp("ctrl+h", "help"),
-	),
-	Quit: key.NewBinding(
-		key.WithKeys(tea.KeyEsc.String(), tea.KeyCtrlC.String()),
-		key.WithHelp("ctrl+c/esc", "quit"),
-	),
-}
-
-type loginModel struct {
+type Model struct {
 	username   textinput.Model
 	password   textinput.Model
 	help       help.Model
 	focusIndex int
 }
 
-func newLoginModel() loginModel {
+func NewLoginModel() Model {
 	usernameInput := textinput.New()
 	usernameInput.Placeholder = "Username"
 	usernameInput.Focus()
@@ -71,7 +29,7 @@ func newLoginModel() loginModel {
 	passwordInput.CharLimit = 156
 	passwordInput.Width = 20
 
-	return loginModel{
+	return Model{
 		username:   usernameInput,
 		password:   passwordInput,
 		focusIndex: 0,
@@ -79,11 +37,11 @@ func newLoginModel() loginModel {
 	}
 }
 
-func (m loginModel) Init() tea.Cmd {
+func (m Model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-func (m loginModel) updateFocus() (tea.Model, tea.Cmd) {
+func (m Model) updateFocus() (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch m.focusIndex {
 	case 0:
@@ -96,7 +54,7 @@ func (m loginModel) updateFocus() (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m loginModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -114,6 +72,9 @@ func (m loginModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, loginKeys.Up):
 			m.focusIndex = (m.focusIndex + 1) % 2
 			return m.updateFocus()
+		case key.Matches(msg, loginKeys.Enter):
+			request := loginRequest{} // todo: give data
+			return m, request.do
 		}
 	case error:
 		return m, nil
@@ -131,7 +92,7 @@ func (m loginModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m loginModel) View() string {
+func (m Model) View() string {
 	return fmt.Sprintf(
 		"Login\n\n%s\n\n%s\n\n",
 		m.username.View(),
