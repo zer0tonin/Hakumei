@@ -20,7 +20,7 @@ type loginRequest struct {
 	Password string `json:"password"`
 }
 
-type loginResponse struct {
+type LoginResponse struct {
 	Token string `json:"token"`
 }
 
@@ -46,7 +46,7 @@ func (l *loginRequest) do() tea.Msg {
 		return fmt.Errorf(responsePayload.Err)
 	}
 
-	var responsePayload loginResponse
+	var responsePayload LoginResponse
 	if err = json.NewDecoder(resp.Body).Decode(&responsePayload); err != nil {
 		return err
 	}

@@ -12,7 +12,7 @@ import (
 type Model struct {
 	username   textinput.Model
 	password   textinput.Model
-	help       help.Model
+	help       help.Model // TODO: put into main
 	focusIndex int
 	url        string
 }

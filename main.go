@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/zer0tonin/Hakumei/login"
+	"github.com/zer0tonin/Hakumei/browser"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -19,12 +20,14 @@ const (
 type model struct {
 	page       Page
 	loginModel login.Model
+	browserModel browser.Model
 }
 
 func initialModel(url string) model {
 	return model{
 		page:       Login,
 		loginModel: login.NewLoginModel(url),
+		browserModel: browser.NewBrowserModel(url),
 	}
 }
 
@@ -33,18 +36,23 @@ func (m model) Init() tea.Cmd {
 	case Login:
 		return m.loginModel.Init()
 	case Browser:
-		fallthrough
+		return m.browserModel.Init()
 	default:
 		return nil
 	}
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg.(type) {
+	case login.LoginResponse:
+		m.page = 2
+	}
+
 	switch m.page {
 	case Login:
 		return m.loginModel.Update(msg)
 	case Browser:
-		fallthrough
+		return m.browserModel.Update(msg)
 	default:
 		return nil, nil
 	}
@@ -55,7 +63,7 @@ func (m model) View() string {
 	case Login:
 		return m.loginModel.View()
 	case Browser:
-		fallthrough
+		return m.browserModel.View()
 	default:
 		return ""
 	}
