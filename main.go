@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/zer0tonin/Hakumei/login"
 	"github.com/zer0tonin/Hakumei/browser"
+	"github.com/zer0tonin/Hakumei/login"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -18,15 +18,15 @@ const (
 )
 
 type model struct {
-	page       Page
-	loginModel login.Model
+	page         Page
+	loginModel   login.Model
 	browserModel browser.Model
 }
 
 func initialModel(url string) model {
 	return model{
-		page:       Login,
-		loginModel: login.NewLoginModel(url),
+		page:         Login,
+		loginModel:   login.NewLoginModel(url),
 		browserModel: browser.NewBrowserModel(url),
 	}
 }

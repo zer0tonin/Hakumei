@@ -14,7 +14,7 @@ type errorResponse struct {
 
 type browseRequest struct {
 	target string
-	path string
+	path   string
 	search string
 }
 

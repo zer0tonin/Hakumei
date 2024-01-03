@@ -17,13 +17,17 @@ type Model struct {
 
 func NewBrowserModel(url string) Model {
 	return Model{
+		url: url,
+		focusIndex: 0,
+		files: []FileInfos{},
+		help: help.New(),
 	}
 }
 
 func (m Model) Init() tea.Cmd {
-	req := browseRequest{ 
+	req := browseRequest{
 		target: m.url,
-		path: "/",
+		path:   "/",
 		search: "",
 	}
 	return req.do

@@ -76,7 +76,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.updateFocus()
 		case key.Matches(msg, loginKeys.Enter):
 			request := loginRequest{
-				target: m.url,
+				target:   m.url,
 				Username: m.username.Value(),
 				Password: m.password.Value(),
 			}
