@@ -8,14 +8,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type FileDescription struct {
-	IsDir bool   `json:"isDir"`
-	Size  int64  `json:"size"`
-	Path  string `json:"path"`
-}
-
 type Model struct {
-	files      []FileDescription
+	files      []FileInfos
 	help       help.Model // TODO: put into main
 	focusIndex int
 	url        string
@@ -27,7 +21,12 @@ func NewBrowserModel(url string) Model {
 }
 
 func (m Model) Init() tea.Cmd {
-	return nil // TODO get files request
+	req := browseRequest{ 
+		target: m.url,
+		path: "/",
+		search: "",
+	}
+	return req.do
 }
 
 func (m Model) updateFocus() (tea.Model, tea.Cmd) {
@@ -43,6 +42,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
+	case browseResponse:
+		m.files = msg.FileInfos
 	case tea.WindowSizeMsg:
 		m.help.Width = msg.Width
 	case tea.KeyMsg:
@@ -64,7 +65,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch m.focusIndex {
 	case 0:
-		return m, cnd
+		return m, cmd
 	}
 
 	return m, cmd
